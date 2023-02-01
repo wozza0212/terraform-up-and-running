@@ -3,9 +3,9 @@ provider "aws" {
 }
 
 resource "aws_launch_configuration" "example" {
-    ami             = "ami-0fb653ca2d3203ac1"
-    instance_type   = "t2.micro"
-    vpc_security_group_ids = [aws_security_group.instance.id]
+    image_id                = "ami-0fb653ca2d3203ac1"
+    instance_type           = "t2.micro"
+    security_groups  = [aws_security_group.instance.id]
 
     user_data = <<-EOF
                 #!/bin/bash
@@ -16,12 +16,7 @@ resource "aws_launch_configuration" "example" {
     lifecycle {
         create_before_destroy = true
     }
-
-    user_data_replace_on_change = true
-
-    tags = {
-        Name = "terraform-example"
-    }
+    
 }
 
 resource "aws_security_group" "instance" {
@@ -48,7 +43,7 @@ resource "aws_autoscaling_group" "example" {
     tag {
         key                 = "Name"
         value               = "terraform-asg-example"
-        propogate_at_launch = true 
+        propagate_at_launch = true 
     }
 }
 
@@ -58,10 +53,6 @@ variable "server_port" {
     default     = 8080
 }
 
-output "alb_dns_name" {
-    value       = aws_lb.example.dns_name
-    description = "The domain name of the load balancer"
-}
 
 data "aws_vpc" "default" {
     default = true
@@ -111,7 +102,7 @@ resource "aws_security_group" "alb" {
     }
 
     #Allow outbound HTTP requests
-    engress {
+    egress {
         from_port       = 0
         to_port         = 0
         protocol        = "-1"
@@ -137,7 +128,7 @@ resource "aws_lb_target_group" "asg" {
 }
 
 resource "aws_lb_listener_rule" "asg" {
-    listener_anr    = aws_lb_listener.http.arn
+    listener_arn    = aws_lb_listener.http.arn
     priority        = 100
 
     condition {
