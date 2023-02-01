@@ -81,6 +81,7 @@ resource "aws_lb" "example" {
     subnets             = data.aws_subnets.default.ids
     security_groups      = [aws_security_group.alb.id]
 }
+
 resource "aws_lb_listener" "http" {
     load_balancer_arn   = aws_lb.example.arn 
     port                = 80
@@ -135,7 +136,7 @@ resource "aws_lb_target_group" "asg" {
     }
 }
 
-resource "aws_listener_rule" "asg" {
+resource "aws_lb_listener_rule" "asg" {
     listener_anr    = aws_lb_listener.http.arn
     priority        = 100
 
